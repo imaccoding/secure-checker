@@ -1,0 +1,105 @@
+{
+  "name": "secure-checker",
+  "displayName": "Secure Checker",
+  "description": "Scan your workspace or a live website for security risks - quick or detailed - with remediation reports.",
+  "version": "0.1.0",
+  "publisher": "secure-checker",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imaccoding/secure-checker.git",
+    "directory": "packages/vscode-extension"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node esbuild.config.mjs",
+    "package": "vsce package --no-dependencies -o secure-checker.vsix"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "secureChecker.quickScanWorkspace",
+        "title": "Secure Checker: Quick Scan Workspace"
+      },
+      {
+        "command": "secureChecker.detailedScanWorkspace",
+        "title": "Secure Checker: Detailed Scan Workspace"
+      },
+      {
+        "command": "secureChecker.scanCurrentFile",
+        "title": "Secure Checker: Scan Current File"
+      },
+      {
+        "command": "secureChecker.scanWebsite",
+        "title": "Secure Checker: Scan a Website URL"
+      },
+      {
+        "command": "secureChecker.showMonthlyReport",
+        "title": "Secure Checker: Show Monthly Trend Report"
+      },
+      {
+        "command": "secureChecker.showYearlyReport",
+        "title": "Secure Checker: Show Yearly Trend Report"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "secureChecker.quickScanWorkspace"
+        },
+        {
+          "command": "secureChecker.detailedScanWorkspace"
+        },
+        {
+          "command": "secureChecker.scanCurrentFile"
+        },
+        {
+          "command": "secureChecker.scanWebsite"
+        },
+        {
+          "command": "secureChecker.showMonthlyReport"
+        },
+        {
+          "command": "secureChecker.showYearlyReport"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Secure Checker",
+      "properties": {
+        "secureChecker.saveHistory": {
+          "type": "boolean",
+          "default": true,
+          "description": "Save each scan to .secure-checker/history in the workspace so monthly/yearly trend reports can be built."
+        },
+        "secureChecker.rawRetentionDays": {
+          "type": "number",
+          "default": 90,
+          "description": "Days of full-detail scan history to keep before it's compacted into a monthly summary."
+        },
+        "secureChecker.monthlyRetentionMonths": {
+          "type": "number",
+          "default": 24,
+          "description": "Months of monthly summaries to keep before they're compacted into a yearly summary."
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@secure-checker/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.6.3"
+  }
+}

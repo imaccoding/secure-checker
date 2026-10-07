@@ -1,0 +1,25 @@
+{
+  "name": "secure-checker",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Security checker for source code and live websites - quick or detailed scans with remediation reports",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imaccoding/secure-checker.git"
+  },
+  "workspaces": [
+    "packages/core",
+    "packages/cli",
+    "packages/vscode-extension",
+    "packages/web-extension"
+  ],
+  "scripts": {
+    "build": "npm run build -w packages/core && npm run build -w packages/cli && npm run build -w packages/vscode-extension && npm run build -w packages/web-extension",
+    "build:core": "npm run build -w packages/core",
+    "build:cli": "npm run build -w packages/cli",
+    "test:core": "npm run test -w packages/core",
+    "package:vscode": "npm run build -w packages/vscode-extension && npm run package -w packages/vscode-extension",
+    "package:web-extension": "npm run build -w packages/web-extension && npm run package -w packages/web-extension"
+  },
+  "license": "MIT"
+}

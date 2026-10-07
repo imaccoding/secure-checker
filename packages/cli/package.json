@@ -1,0 +1,20 @@
+{
+  "name": "@secure-checker/cli",
+  "version": "0.1.0",
+  "description": "Command-line interface for secure-checker",
+  "type": "module",
+  "bin": {
+    "secure-checker": "./bin/secure-checker.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@secure-checker/core": "^0.1.0",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@types/node": "^22.7.5"
+  }
+}

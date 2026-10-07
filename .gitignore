@@ -1,0 +1,8 @@
+node_modules/
+dist/
+dist-zip/
+out/
+*.vsix
+.secure-checker/
+*.log
+.DS_Store

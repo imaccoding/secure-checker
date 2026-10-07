@@ -1,0 +1,25 @@
+{
+  "name": "@secure-checker/core",
+  "version": "0.1.0",
+  "description": "Scanning engine for secure-checker: SAST rules, dependency audit, config checks, and live web checks",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./web-rules": "./dist/web/rules.js",
+    "./web-probe": "./dist/web/probePaths.js",
+    "./report-html": "./dist/report/html.js",
+    "./report-markdown": "./dist/report/markdown.js",
+    "./types": "./dist/types.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test dist/**/*.test.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@types/node": "^22.7.5"
+  }
+}

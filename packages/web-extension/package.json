@@ -1,0 +1,19 @@
+{
+  "name": "@secure-checker/web-extension",
+  "version": "0.1.0",
+  "description": "Browser extension for secure-checker: scan the current site's headers, cookies, and HTTPS status",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "dependencies": {
+    "@secure-checker/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "@types/chrome": "^0.0.280",
+    "typescript": "^5.6.3"
+  }
+}
