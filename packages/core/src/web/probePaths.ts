@@ -60,25 +60,62 @@ const EXPOSURE_PATHS: ExposurePath[] = [
   },
 ];
 
+interface ProbeOutcome {
+  status: number;
+  signature: string;
+}
+
+/** A random, essentially-guaranteed-nonexistent path, used to fingerprint how this server
+ * responds to "not found" - many SPAs (React Router, Vite, etc.) route every unmatched path
+ * to index.html with a 200 status instead of a real 404, which would otherwise make every
+ * exposure check below look like a hit. */
+function randomMissingPath(): string {
+  return `/__secure-checker-probe-${Math.random().toString(36).slice(2)}-${Date.now()}`;
+}
+
+async function probe(url: string, fetchImpl: typeof fetch): Promise<ProbeOutcome | undefined> {
+  try {
+    const res = await fetchImpl(url, { method: "GET", redirect: "manual" });
+    let body = "";
+    try {
+      body = await res.text();
+    } catch {
+      // unreadable body - fall back to status-only comparison
+    }
+    return { status: res.status, signature: `${body.length}:${body.slice(0, 200)}` };
+  } catch {
+    return undefined;
+  }
+}
+
 export async function probeCommonExposures(baseUrl: string, fetchImpl: typeof fetch = fetch): Promise<Finding[]> {
   const findings: Finding[] = [];
   const base = baseUrl.replace(/\/$/, "");
 
+  const baseline = await probe(base + randomMissingPath(), fetchImpl);
+
+  function isDistinguishableFromMissing(outcome: ProbeOutcome | undefined): boolean {
+    if (!outcome) return false;
+    if (outcome.status < 200 || outcome.status >= 300) return false;
+    if (baseline && baseline.status === outcome.status && baseline.signature === outcome.signature) {
+      // Same status and body as a guaranteed-missing path - this server returns a catch-all
+      // response (SPA fallback, custom error page, etc.) rather than genuinely serving the file.
+      return false;
+    }
+    return true;
+  }
+
   await Promise.all(
     EXPOSURE_PATHS.map(async (exposure) => {
       const url = base + exposure.path;
-      try {
-        const res = await fetchImpl(url, { method: "GET", redirect: "manual" });
-        const isSecurityTxtCheck = exposure.ruleId === "web-missing-security-txt";
-        const found = res.status >= 200 && res.status < 300;
+      const outcome = await probe(url, fetchImpl);
+      const isSecurityTxtCheck = exposure.ruleId === "web-missing-security-txt";
+      const found = isDistinguishableFromMissing(outcome);
 
-        if (isSecurityTxtCheck && !found) {
-          findings.push(toFinding(exposure, url));
-        } else if (!isSecurityTxtCheck && found) {
-          findings.push(toFinding(exposure, url));
-        }
-      } catch {
-        // Network error / blocked - skip silently, this is a best-effort probe.
+      if (isSecurityTxtCheck && !found) {
+        findings.push(toFinding(exposure, url));
+      } else if (!isSecurityTxtCheck && found) {
+        findings.push(toFinding(exposure, url));
       }
     })
   );
